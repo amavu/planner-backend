@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const http = require("http");
 
 // Express Server
 
@@ -17,5 +18,5 @@ app.get("/", (req, res) => {
 var server = http.createServer(app);
 
 server.listen(port, () => {
-  console.log(`DogTinder WS-API listening on port ${port}`);
+  console.log(`Planner API listening on port ${port}`);
 });

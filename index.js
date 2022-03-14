@@ -17,6 +17,7 @@ const {
   createToDo,
   editToDo,
   getToDoById,
+  getToDoListById,
   deleteToDoById,
   deleteToDoListById,
 } = require("./services/database");
@@ -208,11 +209,24 @@ app.put("/todo/:id", async (req, res) => {
   }
 });
 
-app.get("/todo/:id", async (req, res) => {
+app.get("/todos/:id", async (req, res) => {
   try {
     const todoId = req.params.id;
-    const todo = await getToDoById(todoId);
-    res.send(todo);
+    const todos = await getToDoById(todoId);
+    res.send(todos);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      error: "Unable to contact database - please try again",
+    });
+  }
+});
+
+app.get("/todolist/:id", async (req, res) => {
+  try {
+    const todoListId = req.params.id;
+    const todoList = await getToDoListById(todoListId);
+    res.send(todoList);
   } catch (error) {
     console.log(error);
     res.status(500).send({

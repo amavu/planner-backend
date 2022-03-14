@@ -139,6 +139,16 @@ function getToDoById(id) {
     .then((results) => results.rows[0]);
 }
 
+function getToDoListById(id) {
+  return database
+    .query(
+      `SELECT *
+    FROM todolist
+    WHERE id = ${id}`
+    )
+    .then((results) => results.rows[0]);
+}
+
 function deleteToDoById(id) {
   return database
     .query(
@@ -186,6 +196,7 @@ module.exports = {
   createToDo,
   editToDo,
   getToDoById,
+  getToDoListById,
   deleteToDoById,
   deleteToDoListById,
 };

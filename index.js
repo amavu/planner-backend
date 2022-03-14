@@ -20,6 +20,8 @@ const {
   getToDoListById,
   deleteToDoById,
   deleteToDoListById,
+  shareToDoListWithUser,
+  checkedToDo,
 } = require("./services/database");
 
 // Express Server
@@ -110,16 +112,13 @@ app.put("/users/:userid", async (req, res) => {
 
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
-  console.log(email, password);
   try {
     const user = await getUserByEmail(email);
-    console.log(user);
     if (!user) {
       return res.status(401).send({ error: "Unknown user" });
     }
     // Load hash from your password DB
     const isCorrectPassword = await bcrypt.compare(password, user.password);
-    console.log(isCorrectPassword);
     if (!isCorrectPassword) {
       console.log("not correct password");
       return res.status(401).send({ error: "Wrong password" });
@@ -133,8 +132,6 @@ app.post("/login", async (req, res) => {
         },
         Buffer.from(secret, "base64")
       );
-
-      console.log(token);
       res.send({
         token: token,
       });
@@ -172,6 +169,7 @@ app.post("/todolists", async (req, res) => {
       owner,
       day
     );
+    await shareToDoListWithUser(owner, newToDoList.id);
     res.send(newToDoList);
   } catch (error) {
     console.log(error);
@@ -200,6 +198,20 @@ app.put("/todo/:id", async (req, res) => {
 
   try {
     const newToDo = await editToDo(id, text, startTime);
+    res.send(newToDo);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      error: "Unable to contact database - please try again",
+    });
+  }
+});
+
+app.put("/checktodo/:todoId", async (req, res) => {
+  const { checked } = req.body;
+
+  try {
+    const newToDo = await checkedToDo(req.params.todoId, checked);
     res.send(newToDo);
   } catch (error) {
     console.log(error);
@@ -253,6 +265,27 @@ app.delete("/todolist/:id", async (req, res) => {
     const todolistId = req.params.id;
     const todolist = await deleteToDoListById(todolistId);
     res.status(200).send(todolist);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      error: "Unable to contact database - please try again",
+    });
+  }
+});
+
+app.post("/sharetodolist/:todolistId", async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await getUserByEmail(email);
+    if (!user) {
+      return res.status(404).send({ error: "Unknown user" });
+    }
+    const shareToDoList = await shareToDoListWithUser(
+      user.id,
+      req.params.todolistId
+    );
+    res.send(shareToDoList);
   } catch (error) {
     console.log(error);
     res.status(500).send({

@@ -1,12 +1,9 @@
 const { Pool } = require("pg");
-const pgp = require("pg-promise")();
 
 const connection = {
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
 };
-
-const db = pgp(connection);
 
 const database = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -67,9 +64,9 @@ function editUser(id, firstname, surname, email, password, img) {
 function getToDoLists(userId) {
   return database
     .query(
-      `SELECT *
-    FROM todolist
-    WHERE owner = ${userId}`
+      `SELECT * FROM todolist 
+    LEFT JOIN usertodolist ON usertodolist.userid = ${userId}
+    WHERE todolist.id = usertodolist.todolistid`
     )
     .then((results) => results.rows);
 }
@@ -129,6 +126,19 @@ function editToDo(id, text, startTime) {
     .then((results) => results.rows[0]);
 }
 
+function checkedToDo(todoId, checked) {
+  return database
+    .query(
+      `UPDATE todo
+    SET checked = ${checked}
+    WHERE id = ${todoId}
+    RETURNING
+      *
+      `
+    )
+    .then((results) => results.rows[0]);
+}
+
 function getToDoById(id) {
   return database
     .query(
@@ -169,6 +179,15 @@ function deleteToDoListById(id) {
     .then((results) => results.rows);
 }
 
+function shareToDoListWithUser(userId, todolistId) {
+  return database
+    .query(
+      `INSERT INTO usertodolist(userid, todolistid) 
+    VALUES(${userId}, ${todolistId})`
+    )
+    .then((results) => results.rows);
+}
+
 // async function deleteUser(id) {
 //   console.log(id);
 //   const query = await db
@@ -199,4 +218,6 @@ module.exports = {
   getToDoListById,
   deleteToDoById,
   deleteToDoListById,
+  shareToDoListWithUser,
+  checkedToDo,
 };

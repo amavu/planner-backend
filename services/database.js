@@ -129,11 +129,21 @@ function editToDo(id, text, startTime) {
     .then((results) => results.rows[0]);
 }
 
-function getToDoById(id) {
+function getToDosById(id) {
   return database
     .query(
       `SELECT *
     FROM todo
+    WHERE id = ${id}`
+    )
+    .then((results) => results.rows[0]);
+}
+
+function getToDoListById(id) {
+  return database
+    .query(
+      `SELECT *
+    FROM todolist
     WHERE id = ${id}`
     )
     .then((results) => results.rows[0]);
@@ -185,7 +195,8 @@ module.exports = {
   createToDoList,
   createToDo,
   editToDo,
-  getToDoById,
+  getToDosById,
+  getToDoListById,
   deleteToDoById,
   deleteToDoListById,
 };

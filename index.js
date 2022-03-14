@@ -16,7 +16,7 @@ const {
   createToDoList,
   createToDo,
   editToDo,
-  getToDoById,
+  getToDosById,
   getToDoListById,
   deleteToDoById,
   deleteToDoListById,
@@ -212,7 +212,7 @@ app.put("/todo/:id", async (req, res) => {
 app.get("/todos/:id", async (req, res) => {
   try {
     const todoId = req.params.id;
-    const todos = await getToDoById(todoId);
+    const todos = await getToDosById(todoId);
     res.send(todos);
   } catch (error) {
     console.log(error);

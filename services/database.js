@@ -48,15 +48,28 @@ function createUser(firstname, surname, email, password, img) {
     .then((results) => results.rows[0]);
 }
 
-function editUser(id, firstname, surname, email, password, img) {
+// function editUser(id, firstname, surname, email, password, img) {
+//   return database
+//     .query(
+//       `UPDATE users SET (firstname, surname, email, password, img) = ($2, $3, $4, $5, $6)
+//       WHERE id = $1
+//       RETURNING
+//       *
+//       `,
+//       [id, firstname, surname, email, password, img]
+//     )
+//     .then((results) => results.rows[0]);
+// }
+
+function editUser(id, firstname, surname, email) {
   return database
     .query(
-      `UPDATE users SET (firstname, surname, email, password, img) = ($2, $3, $4, $5, $6)
+      `UPDATE users SET (firstname, surname, email) = ($2, $3, $4)
       WHERE id = $1
       RETURNING
       *
       `,
-      [id, firstname, surname, email, password, img]
+      [id, firstname, surname, email]
     )
     .then((results) => results.rows[0]);
 }
@@ -94,7 +107,11 @@ function createToDoList(name, createdAt, owner, day) {
   `,
       [name, createdAt, owner, day]
     )
-    .then((results) => results.rows[0]);
+    .then((results) => {
+      console.log(results.rows);
+      console.log("today ", new Date());
+      return results.rows[0];
+    });
 }
 
 function createToDo(text, startTime, checked, todolistId) {

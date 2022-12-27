@@ -79,27 +79,12 @@ app.post("/signup", async (req, res) => {
 });
 
 app.put("/users/:userid", async (req, res) => {
-  const { id, firstname, surname, email, password, img } = req.body;
+  const { id, firstname, surname, email, img } = req.body;
 
-  // checks if password is changed for re-hashing
   const user = await getUserById(id);
-  const passwordIsChanged = user.password !== password;
-  let newPassword = "";
-
-  if (passwordIsChanged) {
-    const saltRounds = 10;
-    newPassword = await bcrypt.hash(password, saltRounds);
-  }
 
   try {
-    const updatedUser = editUser(
-      id,
-      firstname,
-      surname,
-      email,
-      passwordIsChanged ? newPassword : password,
-      img
-    );
+    const updatedUser = editUser(id, firstname, surname, email, img);
 
     res.send(updatedUser);
   } catch (error) {
@@ -109,6 +94,39 @@ app.put("/users/:userid", async (req, res) => {
     });
   }
 });
+
+//With password edit
+// app.put("/users/:userid", async (req, res) => {
+//   const { id, firstname, surname, email, password, img } = req.body;
+
+//   // checks if password is changed for re-hashing
+//   const user = await getUserById(id);
+//   const passwordIsChanged = user.password !== password;
+//   let newPassword = "";
+
+//   if (passwordIsChanged) {
+//     const saltRounds = 10;
+//     newPassword = await bcrypt.hash(password, saltRounds);
+//   }
+
+//   try {
+//     const updatedUser = editUser(
+//       id,
+//       firstname,
+//       surname,
+//       email,
+//       passwordIsChanged ? newPassword : password,
+//       img
+//     );
+
+//     res.send(updatedUser);
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).send({
+//       error: "Unable to contact database - please try again",
+//     });
+//   }
+// });
 
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;

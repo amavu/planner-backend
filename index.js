@@ -84,8 +84,8 @@ app.put("/users/:userid", async (req, res) => {
   const user = await getUserById(id);
 
   try {
-    const updatedUser = editUser(id, firstname, surname, email, img);
-
+    const updatedUser = await editUser(id, firstname, surname, email, img);
+    console.log(updatedUser);
     res.send(updatedUser);
   } catch (error) {
     console.log(error);
